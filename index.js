@@ -179,8 +179,6 @@ function fastifyWebsocket (fastify, opts, next) {
       if (typeof wsHandler !== 'function') {
         throw new Error('invalid wsHandler function')
       }
-    } else if (routeOptions.wsproxy) {
-      return handler.call(this, request, reply)
     }
     // we always override the route handler so we can close websocket connections to routes to handlers that don't support websocket connections
     // This is not an arrow function to fetch the encapsulated this
@@ -193,6 +191,8 @@ function fastifyWebsocket (fastify, opts, next) {
           try {
             if (isWebsocketRoute) {
               result = wsHandler.call(this, connection, request)
+            } else if (routeOptions.wsproxy) {
+              return handler.call(this, request, reply)
             } else {
               result = noHandle.call(this, connection, request)
             }
